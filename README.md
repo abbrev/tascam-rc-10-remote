@@ -40,28 +40,6 @@ Button command values
 
 Note: F3 is marked (+) and F4 is marked (-).
 
-RC-10 button layout
--------------------
-
-The RC-10 has the following button layout:
-
-    (Back) (Forw)
-    (Stop) (Play)
-    (Reco) (Mark)
-    (F1  ) (F3  )
-    (F2  ) (F4  )
-
-A better layout might look something like this:
-
-    (F1  )  (F2  )
-    (Stop)  (Play)  (Rec )
-            (F3  )
-     (Back) (Mark) (Forw)
-            (F4  )
-
-(This layout mimics its use with a TASCAM DR-40. Other devices may have
-other layouts.)
-
 Features
 --------
 
