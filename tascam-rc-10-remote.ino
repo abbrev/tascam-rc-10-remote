@@ -133,7 +133,7 @@ void loop()
 		}
 	} else if (currentButton > 0 &&
 	           millis() - lastRepeatTime >= repeat) {
-		lastRepeatTime = millis();
+		lastRepeatTime += repeat;
 		repeat = repeatPeriod;
 	        handleButtonRepeat(currentButton);
 	}
