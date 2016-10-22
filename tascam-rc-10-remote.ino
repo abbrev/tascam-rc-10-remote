@@ -100,7 +100,7 @@ static const struct function functions[] = {
 #define REPEAT_PERIOD 100
 
 #define TURBO_FIRST_REPEAT_PERIOD 100
-#define TURBO_REPEAT_PERIOD 25
+#define TURBO_REPEAT_PERIOD 50
 
 /**** END OF CONFIGURABLES ****/
 

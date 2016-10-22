@@ -44,7 +44,7 @@ Features
 --------
 
 This replacement software also supports a "turbo" mode which increases
-the repeat rate of buttons to 4x the normal rate. This is useful for
+the repeat rate of buttons to 2x the normal rate. This is useful for
 impatient people. :) Turbo mode can be toggled with a press of the turbo
 button.
 
