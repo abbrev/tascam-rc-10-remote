@@ -120,6 +120,8 @@ void setup()
 		pinMode(functions[b].pin, INPUT_PULLUP);
 	}
 	pinMode(TURBO_LED_PIN, OUTPUT);
+
+	setTurbo(false);
 }
 
 void loop()
@@ -152,22 +154,26 @@ void loop()
 #define REPEAT_MASK 0xC0
 #define END_MASK    0x00
 
+static void setTurbo(bool turbo)
+{
+	turboRepeat = turbo;
+	if (turboRepeat) {
+		repeatPeriod = TURBO_REPEAT_PERIOD;
+		firstRepeatPeriod = TURBO_FIRST_REPEAT_PERIOD;
+		digitalWrite(TURBO_LED_PIN, HIGH);
+	} else {
+		repeatPeriod = REPEAT_PERIOD;
+		firstRepeatPeriod = FIRST_REPEAT_PERIOD;
+		digitalWrite(TURBO_LED_PIN, LOW);
+	}
+}
+
 static void handleButtonPress(uint8_t b)
 {
 	if (functions[b].value) {
 		Serial.write(functions[b].value | START_MASK);
 	} else if (functions[b].pin == TURBO_BUTTON_PIN) {
-		// toggle repeat rate
-		turboRepeat ^= true;
-		if (turboRepeat) {
-			repeatPeriod = TURBO_REPEAT_PERIOD;
-			firstRepeatPeriod = TURBO_FIRST_REPEAT_PERIOD;
-			//digitalWrite(TURBO_LED_PIN, LOW);
-		} else {
-			repeatPeriod = REPEAT_PERIOD;
-			firstRepeatPeriod = FIRST_REPEAT_PERIOD;
-			//digitalWrite(TURBO_LED_PIN, HIGH);
-		}
+		setTurbo(!turboRepeat);
 	}
 }
 
