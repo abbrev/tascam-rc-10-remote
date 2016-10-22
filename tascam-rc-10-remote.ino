@@ -220,6 +220,8 @@ static int8_t scanButtons(void)
 		bool pressed = readButtonState(currentButton);
 		if (!pressed) {
 			// button is released
+			debouncing = true;
+			debounceTime = millis();
 			currentButton = -currentButton;
 			return currentButton;
 		}
