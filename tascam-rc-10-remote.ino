@@ -66,16 +66,31 @@
 
 /**** START OF CONFIGURABLES ****/
 
+struct function {
+	uint8_t pin;
+	uint8_t value;
+};
+
+// map of pin numbers and values to send in response to a button
+// press/release/repeat (ORed with start/repeat/end mask)
 /*
- * XXX buttons are number 1..10 so we can return the negative value to
+ * XXX buttons are numbered 1..10 so we can return the negative value to
  * indicate that the button was released. So we have a dummy button at
  * index 0 to account for that.
  */
-// TODO assign all ten (+1) button pins here
-static const uint8_t buttonInputPins[] = {
-	 0, // dummy
-	12, 14, 15, 16, 17, 18, 19, 20, 21, 22, // function buttons
-	23, // turbo button
+static const struct function functions[] = {
+	{  0,  0, }, // dummy
+	{ 12,  8, }, //  1 stop
+	{ 14,  9, }, //  2 play
+	{ 15, 11, }, //  3 record
+	{ 16, 14, }, //  4 forward
+	{ 17, 15, }, //  5 back
+	{ 18, 24, }, //  6 mark
+	{ 19, 28, }, //  7 1/2 [SOLO]
+	{ 20, 29, }, //  8 3/4 [SOLO]
+	{ 21, 30, }, //  9 mic input level +
+	{ 22, 31, }, // 10 mic input level -
+	{ 23,  0, }, // 11 turbo
 };
 
 #define TURBO_LED_PIN 13
@@ -89,16 +104,8 @@ static const uint8_t buttonInputPins[] = {
 
 /**** END OF CONFIGURABLES ****/
 
-// values to send in response to a button press/release/repeat (ORed with
-// start/repeat/end mask)
-static const uint8_t buttonBytes[] = {
-	 0, // dummy
-	 8,  9, 11, 14, 15, 24, 28, 29, 30, 31, // functions
-};
-
 #define SIZEOF_ARRAY(a) (sizeof a / sizeof a[0])
-static const uint8_t numButtonBytes = SIZEOF_ARRAY(buttonBytes);
-static const uint8_t numButtonInputPins = SIZEOF_ARRAY(buttonInputPins);
+static const uint8_t numButtonInputPins = SIZEOF_ARRAY(functions);
 
 static uint8_t firstRepeatPeriod = FIRST_REPEAT_PERIOD;
 static uint8_t repeatPeriod = REPEAT_PERIOD;
@@ -110,7 +117,7 @@ void setup()
 {
 	Serial.begin(9600, SERIAL_8E1);
 	for EACHBUTTON(b) {
-		pinMode(buttonInputPins[b], INPUT_PULLUP);
+		pinMode(functions[b].pin, INPUT_PULLUP);
 	}
 	pinMode(TURBO_LED_PIN, OUTPUT);
 }
@@ -147,9 +154,9 @@ void loop()
 
 static void handleButtonPress(uint8_t b)
 {
-	if (b < numButtonBytes) {
-		Serial.write(buttonBytes[b] | START_MASK);
-	} else if (buttonInputPins[b] == TURBO_BUTTON_PIN) {
+	if (functions[b].value) {
+		Serial.write(functions[b].value | START_MASK);
+	} else if (functions[b].pin == TURBO_BUTTON_PIN) {
 		// toggle repeat rate
 		turboRepeat ^= true;
 		if (turboRepeat) {
@@ -166,15 +173,15 @@ static void handleButtonPress(uint8_t b)
 
 static void handleButtonRelease(uint8_t b)
 {
-	if (b < numButtonBytes) {
-		Serial.write(buttonBytes[b] | END_MASK);
+	if (functions[b].value) {
+		Serial.write(functions[b].value | END_MASK);
 	}
 }
 
 static void handleButtonRepeat(uint8_t b)
 {
-	if (b < numButtonBytes) {
-		Serial.write(buttonBytes[b] | REPEAT_MASK);
+	if (functions[b].value) {
+		Serial.write(functions[b].value | REPEAT_MASK);
 	}
 }
 
@@ -223,5 +230,5 @@ static int8_t scanButtons(void)
 // return true if button 'b' is pressed
 static bool readButtonState(uint8_t b)
 {
-	return digitalRead(buttonInputPins[b]) == LOW;
+	return digitalRead(functions[b].pin) == LOW;
 }
